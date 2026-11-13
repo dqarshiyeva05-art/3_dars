@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulyator</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ddd6fe, #bfdbfe);
+      font-family: Arial, sans-serif;
+    }
+
+    .kalkulyator {
+      width: 320px;
+      max-width: 95%;
+      padding: 24px;
+      background: #1e293b;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px #0003;
+    }
+
+    h2 {
+      color: white;
+      text-align: center;
+      margin: 0 0 20px;
+    }
+
+    #ekran {
+      width: 100%;
+      height: 75px;
+      margin-bottom: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #0f172a;
+      color: white;
+      text-align: right;
+      font-size: 30px;
+    }
+
+    .tugmalar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      height: 55px;
+      border: none;
+      border-radius: 12px;
+      background: #334155;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    button:hover { filter: brightness(1.25); }
+    button:active { transform: scale(0.95); }
+
+    .amal { background: #7c3aed; }
+    .tozalash { background: #e11d48; }
+    .teng { background: #059669; }
+    .keng { grid-column: span 2; }
+  </style>
+</head>
+
+<body>
+  <div class="kalkulyator">
+    <h2>Kalkulyator</h2>
+    <input id="ekran" value="0" readonly aria-label="Natija">
+
+    <div class="tugmalar">
+      <button class="tozalash keng" onclick="tozalash()">C</button>
+      <button onclick="ochirish()">⌫</button>
+      <button class="amal" onclick="amalTanlash('/')">÷</button>
+
+      <button onclick="raqam('7')">7</button>
+      <button onclick="raqam('8')">8</button>
+      <button onclick="raqam('9')">9</button>
+      <button class="amal" onclick="amalTanlash('*')">×</button>
+
+      <button onclick="raqam('4')">4</button>
+      <button onclick="raqam('5')">5</button>
+      <button onclick="raqam('6')">6</button>
+      <button class="amal" onclick="amalTanlash('-')">−</button>
+
+      <button onclick="raqam('1')">1</button>
+      <button onclick="raqam('2')">2</button>
+      <button onclick="raqam('3')">3</button>
+      <button class="amal" onclick="amalTanlash('+')">+</button>
+
+      <button onclick="raqam('0')">0</button>
+      <button onclick="raqam('.')">.</button>
+      <button class="teng keng" onclick="hisoblash()">=</button>
+    </div>
+  </div>
+
+  <script>
+    const ekran = document.getElementById("ekran");
+    let birinchi = null;
+    let amal = null;
+    let yangiRaqam = true;
+
+    // Ekranga raqam yozish
+    function raqam(qiymat) {
+      if (yangiRaqam) {
+        ekran.value = qiymat === "." ? "0." : qiymat;
+        yangiRaqam = false;
+        return;
+      }
+
+      if (qiymat === "." && ekran.value.includes(".")) return;
+
+      ekran.value = ekran.value === "0" && qiymat !== "."
+        ? qiymat
+        : ekran.value + qiymat;
+    }
+
+    // Amalni tanlash
+    function amalTanlash(tanlangan) {
+      if (ekran.value === "Xatolik") return;
+
+      if (amal !== null && !yangiRaqam) hisoblash();
+      if (ekran.value === "Xatolik") return;
+
+      birinchi = Number(ekran.value);
+      amal = tanlangan;
+      yangiRaqam = true;
+    }
+
+    // Natijani hisoblash
+    function hisoblash() {
+      if (amal === null || yangiRaqam) return;
+
+      const ikkinchi = Number(ekran.value);
+      let natija;
+
+      if (amal === "+") natija = birinchi + ikkinchi;
+      if (amal === "-") natija = birinchi - ikkinchi;
+      if (amal === "*") natija = birinchi * ikkinchi;
+      if (amal === "/") {
+        natija = ikkinchi === 0 ? NaN : birinchi / ikkinchi;
+      }
+
+      ekran.value = Number.isFinite(natija)
+        ? Number(natija.toPrecision(12))
+        : "Xatolik";
+
+      birinchi = null;
+      amal = null;
+      yangiRaqam = true;
+    }
+
+    // Hammasini tozalash
+    function tozalash() {
+      ekran.value = "0";
+      birinchi = null;
+      amal = null;
+      yangiRaqam = true;
+    }
+
+    // Oxirgi raqamni o‘chirish
+    function ochirish() {
+      if (yangiRaqam) return;
+      ekran.value = ekran.value.slice(0, -1) || "0";
+    }
+  </script>
+</body>
+</html>
